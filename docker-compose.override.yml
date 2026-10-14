@@ -1,0 +1,19 @@
+# Dev/Local - tự động được nạp cùng docker-compose.yml khi chạy `docker compose up`.
+services:
+  app:
+    build:
+      target: dev
+    env_file:
+      - .env.local
+    volumes:
+      # Sửa code trên máy là thấy ngay trong container
+      - .:/var/www/html
+      # Giữ vendor/ của image, không bị thư mục vendor trên máy Windows đè lên
+      - /var/www/html/vendor
+
+  db:
+    env_file:
+      - .env.local
+    ports:
+      # Cổng 3307 trên máy -> 3306 trong container (tránh trùng MySQL của XAMPP ở 3306)
+      - "3307:3306"

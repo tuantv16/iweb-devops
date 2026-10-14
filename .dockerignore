@@ -1,0 +1,22 @@
+.git
+.gitignore
+.idea
+.vscode
+node_modules
+vendor
+
+# Không đưa secret / dữ liệu local vào image
+.env
+.env.*
+!.env.example
+
+database/*.sqlite
+storage/logs/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*.php
+
+docker-compose*.yml
+Jenkinsfile
+README.md
