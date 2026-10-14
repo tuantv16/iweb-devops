@@ -35,7 +35,7 @@
             <p>{{ $item->summary }}</p>
         </article>
     @empty
-        <p class="empty">Chưa có tin tức nào.</p>
+        <p class="empty">Không có tin tức nào.</p>
     @endforelse
 </main>
 </body>
