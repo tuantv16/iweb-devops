@@ -1,0 +1,22 @@
+# Jenkins chạy local để học CI. Tách riêng khỏi stack ứng dụng (app + db):
+#   docker compose -f docker-compose.jenkins.yml up -d --build
+# Giao diện: http://localhost:8081
+name: iweb-jenkins
+
+services:
+  jenkins:
+    build:
+      context: docker/jenkins
+    image: iweb-jenkins:latest
+    # Chạy root để dùng được /var/run/docker.sock. CHỈ dành cho lab local, không dùng cho server thật.
+    user: root
+    ports:
+      - "8081:8080"   # UI (8080 trên máy đã dành cho app Laravel)
+      - "50000:50000" # agent JNLP
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  jenkins_home:
