@@ -1,0 +1,49 @@
+# Staging (EC2 Ubuntu). File độc lập, KHÔNG gộp với docker-compose.yml: server chỉ cần file này
+# + .env.staging, image được kéo từ ECR (không build trên server).
+#
+#   APP_IMAGE=<account>.dkr.ecr.<region>.amazonaws.com/iweb-devops:<tag> \
+#     docker compose -f docker-compose.staging.yml --env-file .env.staging up -d
+name: iweb-devops-staging
+
+services:
+  app:
+    image: ${APP_IMAGE:?APP_IMAGE chưa được đặt}
+    env_file:
+      - .env.staging
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      # Cổng 80 của EC2 -> 8080 trong container
+      - "80:8080"
+    restart: unless-stopped
+    networks:
+      - iweb
+
+  db:
+    image: mysql:8.0
+    env_file:
+      - .env.staging
+    # EC2 t3.small chỉ có 2 GB RAM: giảm bộ nhớ MySQL cho nhẹ.
+    command:
+      - --innodb-buffer-pool-size=128M
+      - --performance-schema=OFF
+      - --max-connections=50
+    volumes:
+      - db_data:/var/lib/mysql
+    # Không publish cổng 3306: chỉ app trong network nội bộ truy cập được DB.
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    restart: unless-stopped
+    networks:
+      - iweb
+
+volumes:
+  db_data:
+
+networks:
+  iweb:
