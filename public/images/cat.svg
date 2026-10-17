@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 220" role="img" aria-labelledby="t">
+  <title id="t">Con mèo</title>
+  <!-- tai -->
+  <polygon points="42,98 38,22 100,62" fill="#f2a35a" stroke="#8a4b17" stroke-width="4" stroke-linejoin="round"/>
+  <polygon points="198,98 202,22 140,62" fill="#f2a35a" stroke="#8a4b17" stroke-width="4" stroke-linejoin="round"/>
+  <polygon points="52,82 50,42 84,64" fill="#f7c6c0"/>
+  <polygon points="188,82 190,42 156,64" fill="#f7c6c0"/>
+  <!-- đầu -->
+  <ellipse cx="120" cy="126" rx="88" ry="74" fill="#f2a35a" stroke="#8a4b17" stroke-width="4"/>
+  <!-- vằn trán -->
+  <g stroke="#c9741f" stroke-width="6" stroke-linecap="round" fill="none">
+    <path d="M120 54 V76"/>
+    <path d="M100 58 L104 76"/>
+    <path d="M140 58 L136 76"/>
+  </g>
+  <!-- mõm -->
+  <ellipse cx="120" cy="158" rx="38" ry="26" fill="#fde9cf"/>
+  <!-- mắt -->
+  <ellipse cx="82" cy="120" rx="14" ry="17" fill="#fff" stroke="#8a4b17" stroke-width="3"/>
+  <ellipse cx="158" cy="120" rx="14" ry="17" fill="#fff" stroke="#8a4b17" stroke-width="3"/>
+  <ellipse cx="84" cy="122" rx="7" ry="12" fill="#2b2b2b"/>
+  <ellipse cx="156" cy="122" rx="7" ry="12" fill="#2b2b2b"/>
+  <circle cx="87" cy="116" r="3" fill="#fff"/>
+  <circle cx="159" cy="116" r="3" fill="#fff"/>
+  <!-- mũi + miệng -->
+  <polygon points="111,142 129,142 120,154" fill="#e0757f" stroke="#8a4b17" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M120 154 V162 M120 162 Q108 174 96 164 M120 162 Q132 174 144 164" stroke="#8a4b17" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- râu -->
+  <g stroke="#8a4b17" stroke-width="2.5" stroke-linecap="round">
+    <path d="M78 156 L28 148"/><path d="M78 164 L26 168"/><path d="M80 172 L34 188"/>
+    <path d="M162 156 L212 148"/><path d="M162 164 L214 168"/><path d="M160 172 L206 188"/>
+  </g>
+</svg>

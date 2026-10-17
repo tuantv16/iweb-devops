@@ -20,12 +20,14 @@
         time { color: var(--muted); font-size: .85rem; }
         p { margin: 8px 0 0; }
         .empty { color: var(--muted); text-align: center; padding: 48px 0; }
+        .cat { display: block; width: 180px; max-width: 60%; height: auto; margin: 16px 0 0; }
     </style>
 </head>
 <body>
 <header>
     <h1>{{ config('app.name') }} - Tin tức</h1>
     <div class="env">Môi trường: {{ app()->environment() }} - TRẦN VĂN TUẤN</div>
+    <img class="cat" src="{{ asset('images/cat.svg') }}" alt="Con mèo" width="180" height="165">
 </header>
 <main>
     @forelse ($news as $item)
