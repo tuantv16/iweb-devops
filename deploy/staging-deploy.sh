@@ -12,16 +12,29 @@ main() {
   local IMAGE="${1:?Thiếu tham số: image đầy đủ, vd 123.dkr.ecr.ap-southeast-1.amazonaws.com/iweb-devops:develop-abc1234}"
   cd "$HOME"
 
-  local COMPOSE="docker compose -f docker-compose.staging.yml --env-file .env.staging"
+  # Chỉ một lần deploy chạy tại một thời điểm (tránh hai build giẫm lên nhau trên cùng container).
+  exec 9> /tmp/iweb-staging-deploy.lock
+  flock -w 600 9 || { echo "!!! Đang có lần deploy khác chạy quá 10 phút" >&2; return 1; }
+
+  # APP_IMAGE nằm ở file riêng, KHÔNG nằm trong .env.staging: service db đọc .env.staging
+  # (env_file), nếu file đó đổi mỗi lần deploy thì Compose sẽ tạo lại container db.
+  local IMAGE_FILE=".app-image.env"
+  local COMPOSE="docker compose -f docker-compose.staging.yml --env-file .env.staging --env-file $IMAGE_FILE"
+
+  # Chuyển từ cách cũ (APP_IMAGE trong .env.staging) sang file riêng, chỉ làm một lần.
+  if [ ! -f "$IMAGE_FILE" ]; then
+    grep '^APP_IMAGE=' .env.staging > "$IMAGE_FILE" || echo "APP_IMAGE=$IMAGE" > "$IMAGE_FILE"
+  fi
+  sed -i '/^APP_IMAGE=/d' .env.staging
+
   local REGISTRY="${IMAGE%%/*}"
   local REGION
   REGION="$(echo "$REGISTRY" | cut -d. -f4)"
   local PREV_IMAGE
-  PREV_IMAGE="$(grep '^APP_IMAGE=' .env.staging | cut -d= -f2- || true)"
+  PREV_IMAGE="$(grep '^APP_IMAGE=' "$IMAGE_FILE" | cut -d= -f2- || true)"
 
   set_image() {
-    sed -i '/^APP_IMAGE=/d' .env.staging
-    echo "APP_IMAGE=$1" >> .env.staging
+    echo "APP_IMAGE=$1" > "$IMAGE_FILE"
   }
 
   wait_for_web() {
