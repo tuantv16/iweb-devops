@@ -28,6 +28,7 @@
 <header>
     <h1>{{ config('app.name') }} - Tin tức</h1>
     <div class="env">Môi trường: {{ app()->environment() }} - TRẦN VĂN TUẤN</div>
+    <div class="env"><a href="{{ url('/lien-he') }}">Liên hệ</a></div>
     <div class="pets">
         <img src="{{ asset('images/cat.svg') }}" alt="Con mèo" width="160" height="147">
         <img src="{{ asset('images/dog.svg') }}" alt="Con chó" width="160" height="147">
