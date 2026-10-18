@@ -1,48 +1,15 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name') }} - Notepad</title>
-    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
-    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
-    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
-    <style>
-        :root { color-scheme: light dark; --bg: #f6f7f9; --card: #fff; --text: #1d2330; --muted: #646b7a; --accent: #2557d6; --border: #e1e4ea; --tab: #e9ecf2; --err: #c62828; --err-bg: #fdecea; }
-        @media (prefers-color-scheme: dark) {
-            :root { --bg: #14171f; --card: #1d212c; --text: #e8eaf0; --muted: #9aa1b2; --accent: #7aa2ff; --border: #2c3140; --tab: #262b38; --err: #ff8a80; --err-bg: #3a1a1a; }
-        }
-        * { box-sizing: border-box; }
-        html, body { height: 100%; }
-        body { margin: 0; display: flex; flex-direction: column; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); }
-        header { display: flex; align-items: center; gap: 16px; padding: 10px 16px; }
-        h1 { margin: 0; font-size: 1.2rem; }
-        a { color: var(--accent); }
-        .hint { color: var(--muted); font-size: .85rem; margin-left: auto; }
-        .editor { flex: 1; display: flex; flex-direction: column; min-height: 0; margin: 0 16px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-        .tabbar { display: flex; align-items: flex-end; gap: 2px; padding: 6px 6px 0; background: var(--tab); border-bottom: 1px solid var(--border); overflow-x: auto; }
-        .tab { display: flex; align-items: center; gap: 6px; max-width: 220px; padding: 6px 8px 6px 12px; border: 1px solid transparent; border-bottom: 0; border-radius: 6px 6px 0 0; color: var(--muted); cursor: pointer; white-space: nowrap; user-select: none; }
-        .tab:hover { color: var(--text); }
-        .tab.active { background: var(--card); border-color: var(--border); color: var(--text); margin-bottom: -1px; padding-bottom: 7px; }
-        .tab-title { overflow: hidden; text-overflow: ellipsis; }
-        .tab-rename { width: 140px; padding: 0 4px; font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--accent); border-radius: 3px; }
-        .tab-close, .tab-add { font: inherit; line-height: 1; color: var(--muted); background: transparent; border: 0; border-radius: 4px; cursor: pointer; }
-        .tab-close { width: 20px; height: 20px; }
-        .tab-close:hover, .tab-add:hover { background: var(--border); color: var(--text); }
-        .tab-add { width: 28px; height: 28px; margin: 0 0 3px 4px; font-size: 1.2rem; flex: none; }
-        textarea { flex: 1; width: 100%; padding: 12px 14px; font: 14px/1.5 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; color: var(--text); background: var(--card); border: 0; resize: none; tab-size: 4; outline: none; }
-        .statusbar { display: flex; gap: 16px; padding: 4px 12px; font-size: .8rem; color: var(--muted); background: var(--tab); border-top: 1px solid var(--border); }
-        .statusbar .right { margin-left: auto; }
-        .warn { margin: 0 16px 10px; padding: 8px 12px; border-radius: 8px; background: var(--err-bg); color: var(--err); font-size: .9rem; }
-        .warn[hidden] { display: none; }
-    </style>
-</head>
-<body>
-<header>
-    <h1>Notepad</h1>
-    <a href="{{ url('/') }}">&larr; Về trang chủ</a>
+@extends('layouts.site')
+
+@section('title', config('app.name').' - Notepad')
+@section('body_class', 'page-app')
+@section('main_class', 'app')
+@section('hide_footer', '1')
+
+@section('content')
+<div class="app-head">
+    <h1><span class="grad">Notepad</span></h1>
     <span class="hint">Tự động lưu trong trình duyệt này — không cần bấm Save</span>
-</header>
+</div>
 <div id="warn" class="warn" role="alert" hidden>Không thể lưu vào trình duyệt (bộ nhớ đầy hoặc đang ở chế độ ẩn danh). Dữ liệu sẽ mất khi đóng trang.</div>
 <div class="editor">
     <div class="tabbar" id="tabbar"></div>
@@ -53,7 +20,9 @@
         <span class="right" id="saved"></span>
     </div>
 </div>
+@endsection
 
+@push('scripts')
 <script>
 (function () {
     var KEY = 'notepad.v1';
@@ -233,5 +202,4 @@
     text.focus();
 })();
 </script>
-</body>
-</html>
+@endpush
