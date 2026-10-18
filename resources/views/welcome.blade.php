@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name') }} - Tin tức</title>
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
     <style>
         :root { color-scheme: light dark; --bg: #f6f7f9; --card: #fff; --text: #1d2330; --muted: #646b7a; --accent: #2557d6; --border: #e1e4ea; }
         @media (prefers-color-scheme: dark) {
@@ -29,6 +32,7 @@
     <h1>{{ config('app.name') }} - Tin tức</h1>
     <div class="env">Môi trường: {{ app()->environment() }} - TRẦN VĂN TUẤN</div>
     <div class="env"><a href="{{ url('/lien-he') }}">Liên hệ</a></div>
+    <div class="env"><a href="{{ route('notepad') }}">Notepad</a></div>
     <div class="pets">
         <img src="{{ asset('images/cat.svg') }}" alt="Con mèo" width="160" height="147">
         <img src="{{ asset('images/dog.svg') }}" alt="Con chó" width="160" height="147">
