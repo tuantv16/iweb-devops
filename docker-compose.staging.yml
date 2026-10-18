@@ -17,6 +17,14 @@ services:
       # Cổng 80 của EC2 -> 8080 trong container
       - "80:8080"
     restart: unless-stopped
+    # Gửi stdout/stderr của app (Laravel log, nginx access) lên CloudWatch Logs. Cần IAM role của EC2 có
+    # quyền logs:CreateLogStream/PutLogEvents và log group đã tạo sẵn.
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: ap-southeast-1
+        awslogs-group: /iweb-devops/staging/app
+        awslogs-stream: app
     networks:
       - iweb
 
