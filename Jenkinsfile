@@ -4,8 +4,9 @@
 // không cần cài PHP/Composer và không dính vấn đề bind-mount đường dẫn khi Jenkins chạy trong container.
 //
 // Credential cần có trong Jenkins:
-//   aws-ecr-push : Username with password = AWS access key id / secret (IAM user chỉ có quyền push ECR)
-//   staging-ssh  : SSH Username with private key (user ubuntu của EC2 staging)
+//   aws-ecr-push : Username with password = AWS access key id / secret của IAM user có quyền push ECR
+//                  và quyền SSM để deploy (xem deploy/jenkins-ssm-policy.json). Deploy đi qua SSM nên
+//                  cổng 22 của EC2 luôn đóng, không cần SSH key.
 pipeline {
     agent any
 
@@ -25,7 +26,8 @@ pipeline {
         ECR_REGISTRY = '707243280124.dkr.ecr.ap-southeast-1.amazonaws.com'
         // Tag theo commit để biết server đang chạy code nào và quay lui dễ.
         ECR_IMAGE    = "${ECR_REGISTRY}/iweb-devops:develop-${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : env.BUILD_NUMBER}"
-        STAGING_HOST = '54.255.117.64'
+        STAGING_INSTANCE_ID = 'i-0b8eedf8d29497184'
+        STAGING_URL         = 'https://tuantv.link'
     }
 
     stages {
@@ -79,22 +81,27 @@ pipeline {
         stage('Deploy to staging') {
             when { branch 'develop' }
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'staging-ssh',
-                                                   keyFileVariable: 'SSH_KEY',
-                                                   usernameVariable: 'SSH_USER')]) {
-                    sh '''
-                        SSH_OPTS="-i $SSH_KEY -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=$WORKSPACE/.known_hosts"
-                        scp $SSH_OPTS docker-compose.staging.yml $SSH_USER@$STAGING_HOST:~/docker-compose.staging.yml
-                        ssh $SSH_OPTS $SSH_USER@$STAGING_HOST "bash -s -- $ECR_IMAGE" < deploy/staging-deploy.sh
-                    '''
+                withCredentials([usernamePassword(credentialsId: 'aws-ecr-push',
+                                                  usernameVariable: 'AWS_ACCESS_KEY_ID',
+                                                  passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh 'bash deploy/ssm-deploy.sh "$STAGING_INSTANCE_ID" "$AWS_REGION" "$ECR_IMAGE"'
                 }
             }
         }
 
+        // Web đang bật Basic Auth nên người chưa đăng nhập nhận 401: coi 200 hoặc 401 là web còn sống.
         stage('Smoke test') {
             when { branch 'develop' }
             steps {
-                sh 'curl -fsS --retry 10 --retry-delay 3 --retry-all-errors -o /dev/null -w "staging HTTP %{http_code}\\n" http://$STAGING_HOST/'
+                sh '''
+                    for i in $(seq 1 10); do
+                        code=$(curl -s -o /dev/null -m 15 -w '%{http_code}' "$STAGING_URL/" || true)
+                        echo "lần $i: $STAGING_URL -> HTTP $code"
+                        case "$code" in 200|401) exit 0 ;; esac
+                        sleep 3
+                    done
+                    exit 1
+                '''
             }
         }
     }
@@ -104,7 +111,7 @@ pipeline {
             sh 'docker rmi -f $CI_IMAGE || true'
         }
         success {
-            echo "OK - image ${env.PROD_IMAGE} đã build. Nhánh develop sẽ được push ECR và deploy staging: http://${env.STAGING_HOST}/"
+            echo "OK - image ${env.PROD_IMAGE} đã build. Nhánh develop sẽ được push ECR và deploy staging: ${env.STAGING_URL}/"
         }
         cleanup {
             cleanWs()

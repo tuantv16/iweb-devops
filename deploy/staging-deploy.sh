@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Chạy TRÊN server staging (Jenkins gọi qua SSH):  bash -s -- <image> < deploy/staging-deploy.sh
+# Chạy TRÊN server staging bằng user ubuntu (deploy/ssm-deploy.sh gọi qua SSM):
+#   bash -s -- <image> < staging-deploy.sh
 #
 # Việc làm: kéo image mới từ ECR -> đổi APP_IMAGE -> up -d -> migrate -> kiểm tra web.
 # Nếu bản mới không lên được thì trả APP_IMAGE về bản cũ (migration đã chạy KHÔNG được rollback).
@@ -21,9 +22,18 @@ main() {
   local IMAGE_FILE=".app-image.env"
   local COMPOSE="docker compose -f docker-compose.staging.yml --env-file .env.staging --env-file $IMAGE_FILE"
 
-  # Chuyển từ cách cũ (APP_IMAGE trong .env.staging) sang file riêng, chỉ làm một lần.
+  # Lần đầu chưa có file riêng: lấy image bản đang chạy làm "bản cũ" để rollback được. Thứ tự ưu tiên:
+  # APP_IMAGE trong .env.staging (cách cũ) -> image của container app đang chạy -> file rỗng.
   if [ ! -f "$IMAGE_FILE" ]; then
-    grep '^APP_IMAGE=' .env.staging > "$IMAGE_FILE" || echo "APP_IMAGE=$IMAGE" > "$IMAGE_FILE"
+    local running
+    running="$(docker inspect -f '{{.Config.Image}}' iweb-devops-staging-app-1 2> /dev/null || true)"
+    if grep -q '^APP_IMAGE=' .env.staging; then
+      grep '^APP_IMAGE=' .env.staging > "$IMAGE_FILE"
+    elif [ -n "$running" ]; then
+      echo "APP_IMAGE=$running" > "$IMAGE_FILE"
+    else
+      : > "$IMAGE_FILE"
+    fi
   fi
   sed -i '/^APP_IMAGE=/d' .env.staging
 
@@ -37,9 +47,18 @@ main() {
     echo "APP_IMAGE=$1" > "$IMAGE_FILE"
   }
 
+  # Web chỉ nhận request qua Caddy (HTTPS + Basic Auth), cổng 80 chỉ chuyển hướng sang https. Nên kiểm tra:
+  #  - container app "healthy" (hoặc image không có healthcheck), và
+  #  - Caddy trả 200 hoặc 401 (401 = đang bật đăng nhập, tức Caddy và chứng chỉ đều ổn).
   wait_for_web() {
+    local cid health code
     for _ in $(seq 1 30); do
-      if curl -fsS -o /dev/null http://localhost/; then return 0; fi
+      cid="$($COMPOSE ps -q app)"
+      health="$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$cid" 2> /dev/null || true)"
+      code="$(curl -s -o /dev/null -m 10 -w '%{http_code}' --resolve tuantv.link:443:127.0.0.1 https://tuantv.link/ || true)"
+      if { [ "$health" = healthy ] || [ "$health" = none ]; } && { [ "$code" = 200 ] || [ "$code" = 401 ]; }; then
+        return 0
+      fi
       sleep 3
     done
     return 1
