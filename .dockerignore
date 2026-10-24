@@ -20,3 +20,4 @@ bootstrap/cache/*.php
 docker-compose*.yml
 Jenkinsfile
 README.md
+deploy

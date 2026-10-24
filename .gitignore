@@ -24,3 +24,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Windows-path artifacts written into public/ by stale cached config
+/public/D*storage*

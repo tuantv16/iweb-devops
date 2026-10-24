@@ -28,6 +28,15 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // Dashboard task (trang /tasks). Key chỉ đặt trong .env, không commit.
+    'redmine' => [
+        'url' => env('REDMINE_URL'),
+        'key' => env('REDMINE_API_KEY'),
+        'project' => env('REDMINE_PROJECT'),
+        // Múi giờ để tính "hôm nay" và giờ hiển thị của dashboard (app.timezone vẫn là UTC).
+        'timezone' => env('REDMINE_TIMEZONE', 'Asia/Ho_Chi_Minh'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
