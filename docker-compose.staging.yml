@@ -31,6 +31,10 @@ services:
   # Reverse proxy + HTTPS tự động (Let's Encrypt). Nhận 80/443 của EC2 rồi chuyển vào app:8080.
   caddy:
     image: caddy:2
+    environment:
+      # Đọc từ .env.staging (--env-file), dùng trong Caddyfile.staging qua {$BASIC_AUTH_*}
+      BASIC_AUTH_USER: ${BASIC_AUTH_USER:?BASIC_AUTH_USER chưa được đặt}
+      BASIC_AUTH_HASH: ${BASIC_AUTH_HASH:?BASIC_AUTH_HASH chưa được đặt}
     ports:
       - "80:80"
       - "443:443"
