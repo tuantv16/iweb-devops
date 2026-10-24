@@ -2,6 +2,12 @@
 # DNS đã trỏ về EC2). Copy file này lên server cạnh docker-compose.staging.yml.
 
 tuantv.link {
+	# Bắt đăng nhập (Basic Auth) trước khi vào bất kỳ trang nào. Tài khoản/mã băm bcrypt lấy từ
+	# biến môi trường (đặt trong .env.staging trên server), KHÔNG ghi vào repo.
+	basic_auth {
+		{$BASIC_AUTH_USER} {$BASIC_AUTH_HASH}
+	}
+
 	# "app" = tên service trong docker-compose.staging.yml, 8080 = cổng nginx trong container app
 	reverse_proxy app:8080
 }
