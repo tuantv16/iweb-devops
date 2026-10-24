@@ -28,6 +28,7 @@
             <li><a href="{{ url('/') }}" @class(['active' => request()->is('/')])>Trang chủ</a></li>
             <li><a href="{{ route('contact.create') }}" @class(['active' => request()->routeIs('contact.*')])>Liên hệ</a></li>
             <li><a href="{{ route('notepad') }}" @class(['active' => request()->routeIs('notepad')])>Notepad</a></li>
+            <li><a href="{{ route('tasks') }}" @class(['active' => request()->routeIs('tasks*')])>Tasks</a></li>
         </ul>
     </div>
 </nav>

@@ -1,0 +1,89 @@
+/* Trang /tasks (tổng quan) và /tasks/daily (task mỗi ngày). Dùng biến màu của site.css. */
+.tasks { padding: 28px 0 56px; }
+.tasks .head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 14px; }
+.tasks .head h1 { margin: 0; font-size: 1.6rem; }
+.tasks .head .hint { margin-left: auto; font-size: .85rem; color: var(--muted); }
+.tasks .tabs { display: flex; gap: 6px; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
+.tasks .tabs a { padding: 8px 16px; margin-bottom: -1px; color: var(--muted); border-bottom: 2px solid transparent; font-weight: 600; }
+.tasks .tabs a:hover { color: var(--text); text-decoration: none; }
+.tasks .tabs a.active { color: var(--text); border-bottom-color: var(--cyan); }
+.tasks .sums { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.tasks .sum { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+.tasks .sum b { display: block; font-size: 1.7rem; line-height: 1.1; }
+.tasks .sum span { font-size: .8rem; color: var(--muted); }
+.tasks .sum.bad b { color: var(--err); }
+.tasks .sum.good b { color: var(--ok); }
+.tasks .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 14px; font-size: .85rem; color: var(--muted); }
+.tasks .legend i, .tasks .tag i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 3px; }
+.tasks .g-new { background: #5b6785; }
+.tasks .g-doing { background: var(--cyan); }
+.tasks .g-review { background: var(--violet); }
+.tasks .g-blocked { background: var(--pink); }
+.tasks .member { margin-bottom: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+.tasks .member > summary { display: grid; grid-template-columns: minmax(130px, 1.2fr) 3fr auto; align-items: center; gap: 8px 16px; padding: 14px 16px; cursor: pointer; list-style: none; }
+.tasks .member > summary::-webkit-details-marker { display: none; }
+.tasks .member .name { font-weight: 700; }
+.tasks .member .meta { font-size: .8rem; color: var(--muted); }
+.tasks .bar { display: flex; height: 10px; overflow: hidden; border-radius: 999px; background: rgba(255, 255, 255, .06); }
+.tasks .bar span { display: block; height: 100%; }
+.tasks .nums { font-size: .85rem; text-align: right; white-space: nowrap; }
+.tasks .nums .late { color: var(--err); font-weight: 700; }
+.tasks table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.tasks th, .tasks td { padding: 8px 16px; text-align: left; border-top: 1px solid var(--border); vertical-align: top; }
+.tasks th { font-size: .75rem; font-weight: 600; color: var(--muted); }
+.tasks td.id { white-space: nowrap; }
+.tasks .pct { white-space: nowrap; color: var(--muted); }
+.tasks .due.late { color: var(--err); font-weight: 700; }
+.tasks .err { padding: 16px; border: 1px solid var(--err); border-radius: 14px; color: var(--err); }
+
+/* Tab "Task mỗi ngày" */
+.tasks .daynav { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.tasks .daynav .btn { padding: 8px 16px; }
+.tasks .daynav input[type=date] { padding: 8px 12px; font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; color-scheme: dark; }
+.tasks .daynav .cur { margin-left: 8px; font-weight: 700; }
+.tasks .week { width: 100%; margin-bottom: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.tasks .week th, .tasks .week td { padding: 8px 10px; text-align: center; }
+.tasks .week th:first-child, .tasks .week td:first-child { text-align: left; padding-left: 16px; }
+.tasks .week tr.sel > td { background: rgba(124, 92, 255, .12); }
+.tasks .week th.sel { color: var(--cyan); }
+.tasks .week td a { display: block; color: var(--text); }
+.tasks .week td a small { display: block; color: var(--muted); font-size: .75rem; }
+.tasks .week td.zero { color: var(--muted); opacity: .45; }
+.tasks .week td.sel-col { background: rgba(25, 211, 255, .08); }
+.tasks .notes { margin: 0; padding-left: 16px; color: var(--muted); }
+.tasks .notes li { margin: 2px 0; }
+.tasks .done-badge { display: inline-block; margin-left: 6px; padding: 1px 8px; font-size: .7rem; font-weight: 700; color: #04210f; background: var(--ok); border-radius: 999px; }
+.tasks .member.daily > summary { grid-template-columns: 1fr auto; }
+.tasks .member.daily > summary > div:nth-child(2) { display: none; }
+.tasks .member.daily .name::before { content: "▸"; display: inline-block; width: 1.1em; color: var(--muted); transition: transform .15s; }
+.tasks .member.daily[open] .name::before { transform: rotate(90deg); }
+.tasks .member.daily > summary:hover { background: var(--surface-2); border-radius: 14px; }
+.tasks .rank { display: inline-block; min-width: 1.6em; margin-right: 8px; padding: 0 6px; font-size: .75rem; font-weight: 700; text-align: center; color: var(--muted); background: rgba(255, 255, 255, .06); border-radius: 999px; }
+.tasks .nums b { font-size: 1.15rem; }
+.tasks a.issue { color: var(--text); }
+.tasks a.issue b { color: var(--cyan); }
+.tasks a.issue:hover { text-decoration: underline; }
+.tasks .sum b small { font-size: .9rem; font-weight: 600; color: var(--muted); }
+.tasks .week td a small.ok { color: var(--ok); }
+.tasks .nums .okc { color: var(--ok); }
+.tasks .done-badge.closed { background: transparent; color: var(--ok); border: 1px solid var(--ok); }
+.tasks .sortbtn { display: inline-block; padding: 2px 6px; font: inherit; line-height: 1.35; color: inherit; text-align: center; background: none; border: 1px solid transparent; border-radius: 8px; cursor: pointer; }
+.tasks .sortbtn:hover { background: var(--surface-2); border-color: var(--border); }
+.tasks .sortbtn .arrow { display: block; height: 1em; font-style: normal; color: var(--cyan); }
+.tasks th[aria-sort="descending"] .arrow::before { content: "▼"; }
+.tasks th[aria-sort="ascending"] .arrow::before { content: "▲"; }
+.tasks th[aria-sort="none"] .arrow::before { content: "↕"; color: var(--muted); opacity: .5; }
+.tasks .detail-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin: 8px 0 12px; }
+.tasks .detail-head h2 { margin: 0; font-size: 1.15rem; }
+.tasks .sortbar { display: flex; align-items: center; gap: 6px; margin-left: auto; font-size: .85rem; color: var(--muted); }
+.tasks .sortbar button { padding: 5px 12px; font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; cursor: pointer; }
+.tasks .sortbar button:hover { background: var(--surface-2); }
+.tasks .sortbar button.on { background: var(--grad); border-color: transparent; font-weight: 700; }
+.tasks .acts { font-size: .8rem; color: var(--muted); }
+.tasks .empty { padding: 18px 16px; color: var(--muted); }
+
+@media (max-width: 720px) {
+    .tasks .member > summary { grid-template-columns: 1fr; }
+    .tasks .nums { text-align: left; }
+    .tasks .table-wrap { overflow-x: auto; }
+}
